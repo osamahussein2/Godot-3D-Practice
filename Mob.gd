@@ -31,6 +31,9 @@ func InitializeMob(startingMobPosition, playerPosition):
 	
 	# Rotate the velocity based on the mob's y position in order to move it in the mob's looking direction
 	velocity = velocity.rotated(Vector3.UP, rotation.y)
+	
+	# Change the playback speed based on the mob's random speed
+	$AnimationPlayer.speed_scale = randomSpeed / minimumMobSpeed
 
 func _on_visible_on_screen_notifier_3d_screen_exited():
 	#pass # Replace with function body.
