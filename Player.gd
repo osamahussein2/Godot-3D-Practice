@@ -7,6 +7,12 @@ extends CharacterBody3D
 # The downward acceleration when the player is in the air, falling down
 @export var fallAcceleration = 75
 
+# Verical impulse applied to the character upon jumping
+@export var jumpImpulse = 20
+
+# Verical impulse applied to the character upon bouncing on another mob enemy
+@export var bounceImpulse = 16
+
 # Combines the player speed with the player's direction of movement
 # Needs to be a proeprty so that we can reuse this inside of __process function and reuse this acroos multiple frames
 var targetVelocity = Vector3(0.0, 0.0, 0.0)
@@ -47,4 +53,37 @@ func _physics_process(delta):
 		
 	# Moving the character
 	velocity = targetVelocity
+	
+	# Jumping mechanic
+	if is_on_floor() and Input.is_action_just_pressed("Jump"):
+		targetVelocity.y = jumpImpulse
+	
+	# Loop through all the collisions occurred this frame
+	for index in range(get_slide_collision_count()):
+		
+		# Get the collision with the player
+		var collision = get_slide_collision(index)
+		
+		# If the collision is with the ground, continue iterating
+		if collision.get_collider() == null:
+			continue
+		
+		# If the player collides with the Mob group
+		if collision.get_collider().is_in_group("Mob"):
+			
+			# Get the collider of the Mob node
+			var mob = collision.get_collider()
+			
+			# Check if the player is hitting the mob from above
+			if Vector3.UP.dot(collision.get_normal()) > 0.1:
+				
+				# If true, then squash the mob
+				mob.MobSquashed()
+				
+				# Bounce the player around the screen
+				targetVelocity.y = bounceImpulse
+				
+				# Prevent any duplicate calls to this loop
+				break
+	
 	move_and_slide() # Helps with smooth movement with our character

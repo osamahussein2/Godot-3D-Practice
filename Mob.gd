@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+# Emitted when the player jumps on the mob
+signal squashed
+
 # Minimum speed of the mob
 @export var minimumMobSpeed = 10
 
@@ -33,4 +36,10 @@ func _on_visible_on_screen_notifier_3d_screen_exited():
 	#pass # Replace with function body.
 	
 	# Delete the instance of the mobs whenever they left the screen
+	queue_free()
+
+func MobSquashed():
+	
+	# Emit the squashed signal and destroy the mob
+	squashed.emit()
 	queue_free()
