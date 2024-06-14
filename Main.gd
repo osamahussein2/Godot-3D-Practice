@@ -4,7 +4,10 @@ extends Node
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	#pass # Replace with function body.
+	
+	# Hide the retry text at the start of the game
+	$UserInterface/Retry.hide()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -29,9 +32,22 @@ func _on_mob_timer_timeout():
 	
 	# Spawn the mob by adding it to the Main scene
 	add_child(mob)
+	
+	# Connect the mob being squashed signal with the score label of the user interface to update the score each time
+	mob.squashed.connect($UserInterface/ScoreLabel.onMobSquashed.bind())
 
 
 func _on_player_hit():
 	#pass # Replace with function body.
 	
+	# Stops spawning the mob monsters
 	$MobTimer.stop()
+	
+	# Show the retry text on screen
+	$UserInterface/Retry.show()
+
+func _unhandled_input(event):
+	if event.is_action_pressed("ui_accept") and $UserInterface/Retry.visible:
+		
+		# Restarts the current scene
+		get_tree().reload_current_scene()
