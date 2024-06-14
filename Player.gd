@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+# Emitted when the player is hit by a mob
+signal hit
+
 # How fast the player will be moving
 # Again, using @export makes a variable public to Godot's inspector to modify the value
 @export var playerSpeed = 14
@@ -86,4 +89,15 @@ func _physics_process(delta):
 				# Prevent any duplicate calls to this loop
 				break
 	
+	# Moving the character
+	velocity = targetVelocity
+	
 	move_and_slide() # Helps with smooth movement with our character
+
+func die():
+	hit.emit()
+	queue_free()
+
+func _on_mob_detector_body_entered(body):
+	#pass # Replace with function body.
+	die()
